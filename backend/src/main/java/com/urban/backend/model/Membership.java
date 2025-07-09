@@ -1,0 +1,46 @@
+package com.urban.backend.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "membership")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Membership {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
+
+    @Column(name = "expiry_date", nullable = false)
+    private Instant expiryDate;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    private Boolean isFrozen = false;
+
+    private Instant frozenStart = null;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @OneToMany(mappedBy = "membership", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MembershipPurchase> purchases;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+        this.expiryDate = Instant.now().plus(1, ChronoUnit.MONTHS);
+    }
+}
