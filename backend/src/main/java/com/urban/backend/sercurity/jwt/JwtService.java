@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,17 +57,21 @@ public class JwtService {
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
         long expirationDate = System.currentTimeMillis() + expiration;
 
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
         return Jwts.builder()
                 .header().type("JWT").and()
-                .claims(extraClaims)
                 .subject(userDetails.getUsername())
+                .claims(extraClaims)
+                .claim("admin", isAdmin)
                 .issuedAt(currentDate())
                 .expiration(new Date(expirationDate))
                 .signWith(privateKey).compact();
     }
 
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         try {
             return Jwts.parser()
                     .verifyWith(publicKey)
@@ -84,10 +87,6 @@ public class JwtService {
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("JWT claims string is empty", e);
         }
-    }
-
-    public boolean canTokenBeRefreshed(String token) {
-        return !isTokenExpired(token);
     }
 
     public long getExpirationTime(String token) {

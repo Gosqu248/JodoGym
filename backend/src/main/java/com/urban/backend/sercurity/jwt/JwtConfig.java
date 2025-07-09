@@ -26,29 +26,36 @@ public class JwtConfig {
     private String publicKey;
 
     @Bean
-    public PrivateKey generatePrivateKey() {
-        try {
-            var keyBytes = Base64.getDecoder().decode(privateKey);
-            var privateKeySpec = new PKCS8EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return keyFactory.generatePrivate(privateKeySpec);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public PrivateKey privateKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+
+        String privateKeyContent = privateKey
+                .replace("\\n", "\n")
+                .replaceAll("\n", "")
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
+
+        byte[] decoded = Base64.getDecoder().decode(privateKeyContent);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
+        return keyFactory.generatePrivate(keySpec);
     }
 
     @Bean
-    public PublicKey generatePublicKey() {
-        try {
-            var keyBytes = Base64.getDecoder().decode(publicKey);
-            var publicKeySpec = new X509EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return keyFactory.generatePublic(publicKeySpec);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public PublicKey publicKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
 
+        String publicKeyContent = publicKey
+                .replace("\\n", "\n")
+                .replaceAll("\n", "")
+                .replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
+                .replaceAll("\\s", "");
+
+        byte[] decoded = Base64.getDecoder().decode(publicKeyContent);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePublic(new X509EncodedKeySpec(decoded));
+    }
 
     @Bean
     public long jwtExpiration() {
