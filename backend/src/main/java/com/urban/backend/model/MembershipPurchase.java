@@ -9,7 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Entity
-@Table(name = "membership_purchases")
+@Table(name = "membership_purchases", schema = "jodo")
 @Getter
 @Setter
 @NoArgsConstructor
