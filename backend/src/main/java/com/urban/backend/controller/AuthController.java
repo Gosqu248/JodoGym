@@ -4,6 +4,8 @@ import com.urban.backend.dto.request.LoginRequest;
 import com.urban.backend.dto.request.RefreshTokenRequest;
 import com.urban.backend.dto.request.RegisterRequest;
 import com.urban.backend.dto.response.AuthResponse;
+import com.urban.backend.dto.response.RefreshResponse;
+import com.urban.backend.dto.response.UserResponse;
 import com.urban.backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(
+    public ResponseEntity<UserResponse> register(
             @Valid @RequestBody RegisterRequest request
     ) {
         return ResponseEntity.ok(authService.register(request));
@@ -32,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponse> refreshToken(
+    public ResponseEntity<RefreshResponse> refreshToken(
             @Valid @RequestBody RefreshTokenRequest request
     ) {
         return ResponseEntity.ok(authService.refreshToken(request.refreshToken()));
