@@ -33,7 +33,7 @@ public class UserController {
     )
     public ResponseEntity<UserInfoResponse> saveUserInfo(
             @RequestHeader("Authorization") String token,
-            UserInfoRequest request
+            @ModelAttribute UserInfoRequest request
     ) throws IOException {
         String jwtToken = token.substring(7);
         UserInfoResponse userInfoResponse = userInfoService.saveUserInfo(jwtToken, request);

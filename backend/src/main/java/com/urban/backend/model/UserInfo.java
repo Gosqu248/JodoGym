@@ -32,10 +32,11 @@ public class UserInfo {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
+    @Column(name = "photo")
     private byte[] photo;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     @PrePersist

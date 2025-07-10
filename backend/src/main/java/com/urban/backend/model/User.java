@@ -29,6 +29,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    private boolean isFirstLogin = true;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
