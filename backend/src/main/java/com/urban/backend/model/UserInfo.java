@@ -31,7 +31,6 @@ public class UserInfo {
     private Instant createdDate;
 
     @Lob
-    @Column(columnDefinition = "bytea")
     private byte[] photo;
 
     @OneToOne

@@ -32,7 +32,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserInfo userInfo;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
