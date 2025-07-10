@@ -6,12 +6,14 @@ import java.util.UUID;
 
 public record UserResponse(
         UUID id,
-        String email
+        String email,
+        boolean isFirstLogin
 ) {
     public static UserResponse fromUser(User user) {
         return new UserResponse(
                 user.getId(),
-                user.getEmail()
+                user.getEmail(),
+                user.isFirstLogin()
         );
     }
 }

@@ -9,6 +9,7 @@ import com.urban.backend.enums.Role;
 import com.urban.backend.model.User;
 import com.urban.backend.sercurity.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final UserService userService;
     private final JwtService jwtService;
@@ -30,22 +32,34 @@ public class AuthService {
         var user = User.builder()
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
+                .isFirstLogin(true)
                 .role(Role.USER)
                 .build();
 
         var savedUser = userService.save(user);
+        log.info("User registered successfully: {}", savedUser.getEmail());
         return UserResponse.fromUser(savedUser);
     }
 
     public AuthResponse authenticate(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
-        );
+        log.info("Attempting to authenticate user: {}", request.email());
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.email(),
+                            request.password()
+                    )
+            );
+            log.info("Authentication successful for user: {}", request.email());
+        } catch (Exception e) {
+            log.error("Authentication failed for user: {}", request.email(), e);
+            throw e;
+        }
 
         var user = userService.findByEmail(request.email());
+        log.info("User found: {}, isFirstLogin: {}", user.getEmail(), user.isFirstLogin());
+
         UserResponse userResponse = UserResponse.fromUser(user);
 
         var accessToken = jwtService.generateToken(user);

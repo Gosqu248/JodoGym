@@ -13,12 +13,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class AppConfig  {
-
     private final UserRepository userRepository;
 
     public AppConfig(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username).orElseThrow();

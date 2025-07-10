@@ -5,25 +5,25 @@ import com.urban.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 
     public boolean existsByEmail(String email) {
-        return  userRepository.existsByEmail(email);
+        return userRepository.existsByEmail(email);
     }
 
+    @Transactional
     public User save(User user) {
-        if (user == null || user.getEmail() == null || user.getPassword() == null) {
-            throw new IllegalArgumentException("User and its email and password must not be null");
-        }
         return userRepository.save(user);
     }
 }
