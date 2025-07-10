@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,31 +20,42 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final ApplicationContext applicationContext;
-
 
     @Override
     public void doFilterInternal(@NonNull HttpServletRequest request,
                                  @NonNull HttpServletResponse response,
                                  @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        log.debug("Processing request: {} {}", request.getMethod(), request.getRequestURI());
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
+        if (request.getRequestURI().startsWith("/api/auth/")) {
+            log.debug("Auth endpoint detected, skipping JWT validation");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.debug("No Authorization header or invalid format");
             filterChain.doFilter(request, response);
             return;
         }
 
         jwt = authHeader.substring(7);
+        log.debug("JWT token found, length: {}", jwt.length());
 
         try {
             userEmail = jwtService.extractUsername(jwt);
+            log.debug("Extracted username: {}", userEmail);
         } catch (Exception e) {
-            logger.error("JWT token validation failed: " + e.getMessage());
+            log.error("JWT token validation failed: {}", e.getMessage());
             filterChain.doFilter(request, response);
             return;
         }
@@ -53,6 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
+                log.debug("JWT token is valid for user: {}", userEmail);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -62,6 +75,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                log.warn("JWT token is invalid for user: {}", userEmail);
             }
         }
 

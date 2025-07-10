@@ -31,6 +31,7 @@ public class UserInfo {
     private Instant createdDate;
 
     @Lob
+    @Basic(fetch = FetchType.LAZY)
     private byte[] photo;
 
     @OneToOne

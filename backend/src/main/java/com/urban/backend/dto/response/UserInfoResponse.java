@@ -3,8 +3,10 @@ package com.urban.backend.dto.response;
 import com.urban.backend.model.UserInfo;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public record UserInfoResponse(
+        UUID id,
         String firstName,
         String lastName,
         Instant birthDate,
@@ -16,6 +18,7 @@ public record UserInfoResponse(
         }
 
         return new UserInfoResponse(
+                userInfo.getId(),
                 userInfo.getFirstName(),
                 userInfo.getLastName(),
                 userInfo.getBirthDate(),
