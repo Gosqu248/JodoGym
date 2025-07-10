@@ -24,7 +24,6 @@ public class Posts {
     private String description;
 
     @Lob
-    @Column(columnDefinition = "bytea")
     private byte[] photo;
 
 }

@@ -6,14 +6,12 @@ import java.util.UUID;
 
 public record UserResponse(
         UUID id,
-        String email,
-        UserInfoResponse userInfo
+        String email
 ) {
-    public static UserResponse fromUser(User user, UserInfoResponse userInfoResponse) {
+    public static UserResponse fromUser(User user) {
         return new UserResponse(
                 user.getId(),
-                user.getEmail(),
-                userInfoResponse
+                user.getEmail()
         );
     }
 }
