@@ -27,6 +27,9 @@ public class UserInfo {
     @Column(name = "birth_date")
     private Instant birthDate;
 
+    @Column(name = "created_date", updatable = false, nullable = false)
+    private Instant createdDate;
+
     @Lob
     @Column(columnDefinition = "bytea")
     private byte[] photo;
@@ -34,4 +37,9 @@ public class UserInfo {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdDate = Instant.now();
+    }
 }

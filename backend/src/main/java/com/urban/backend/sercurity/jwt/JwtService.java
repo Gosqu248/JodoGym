@@ -18,7 +18,7 @@ public class JwtService {
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
     private final long jwtExpiration;
-    private final long refreshTokenExpiration;
+    private final long resetTokenExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -37,8 +37,8 @@ public class JwtService {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, refreshTokenExpiration);
+    public String generateResetToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, resetTokenExpiration);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -69,7 +69,6 @@ public class JwtService {
                 .expiration(new Date(expirationDate))
                 .signWith(privateKey).compact();
     }
-
 
     public Claims extractAllClaims(String token) {
         try {

@@ -16,8 +16,8 @@ import java.util.Base64;
 
 @Configuration
 public class JwtConfig {
-    private static final long ACCESS_TOKEN_TTL = 5 * 60 * 1000;
-    private static final long REFRESH_TOKEN_TTL = 7 * 24 * 3600 * 1000;
+    private static final long ACCESS_TOKEN_TTL = 24 * 60 * 1000;
+    private static final long RESET_TOKEN_TTL = 5 * 3600 * 1000;
 
     @Value("${AUTH_PRIVATE_KEY}")
     private String privateKey;
@@ -63,7 +63,7 @@ public class JwtConfig {
     }
 
     @Bean
-    public long refreshTokenExpiration() {
-        return REFRESH_TOKEN_TTL;
+    public long resetTokenExpiration() {
+        return RESET_TOKEN_TTL;
     }
 }

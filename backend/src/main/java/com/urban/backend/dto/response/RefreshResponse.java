@@ -1,7 +1,6 @@
 package com.urban.backend.dto.response;
 
-public record AuthResponse(
-        UserResponse user,
+public record RefreshResponse(
         String accessToken,
         long expiresIn
 ) {
