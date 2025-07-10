@@ -4,7 +4,6 @@ import com.urban.backend.dto.request.LoginRequest;
 import com.urban.backend.dto.request.RegisterRequest;
 import com.urban.backend.dto.response.AuthResponse;
 import com.urban.backend.dto.response.RefreshResponse;
-import com.urban.backend.dto.response.UserInfoResponse;
 import com.urban.backend.dto.response.UserResponse;
 import com.urban.backend.enums.Role;
 import com.urban.backend.model.User;
@@ -35,7 +34,7 @@ public class AuthService {
                 .build();
 
         var savedUser = userService.save(user);
-        return UserResponse.fromUser(savedUser, null);
+        return UserResponse.fromUser(savedUser);
     }
 
     public AuthResponse authenticate(LoginRequest request) {
@@ -47,16 +46,16 @@ public class AuthService {
         );
 
         var user = userService.findByEmail(request.email());
-
-        UserInfoResponse userInfo = UserInfoResponse.fromUserInfo(user.getUserInfo());
-        UserResponse userResponse = UserResponse.fromUser(user, userInfo);
+        UserResponse userResponse = UserResponse.fromUser(user);
 
         var accessToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
         var expiresIn = jwtService.getExpirationTime(accessToken);
 
         return new AuthResponse(
                 userResponse,
                 accessToken,
+                refreshToken,
                 expiresIn
         );
     }
@@ -69,10 +68,12 @@ public class AuthService {
 
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
+                var refreshTokenNew = jwtService.generateRefreshToken(user);
                 var expiresIn = jwtService.getExpirationTime(accessToken);
 
                 return new RefreshResponse(
                         accessToken,
+                        refreshTokenNew,
                         expiresIn
                 );
             }

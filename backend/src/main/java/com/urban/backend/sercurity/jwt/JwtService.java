@@ -18,7 +18,9 @@ public class JwtService {
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
     private final long jwtExpiration;
+    private final long refreshTokenExpiration;
     private final long resetTokenExpiration;
+
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -35,6 +37,10 @@ public class JwtService {
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, refreshTokenExpiration);
     }
 
     public String generateResetToken(UserDetails userDetails) {

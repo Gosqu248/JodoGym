@@ -6,10 +6,7 @@ import com.urban.backend.service.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -19,6 +16,12 @@ import java.io.IOException;
 public class UserController {
     private final UserInfoService userInfoService;
 
+    @GetMapping(path = "/info")
+    public ResponseEntity<UserInfoResponse> getUserInfo(@RequestHeader("Authorization") String token) {
+        String jwtToken = token.substring(7);
+        UserInfoResponse userInfoResponse = userInfoService.getUserInfo(jwtToken);
+        return ResponseEntity.ok(userInfoResponse);
+    }
 
     @PostMapping(
             path = "/info",

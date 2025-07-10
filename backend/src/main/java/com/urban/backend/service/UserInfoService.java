@@ -5,7 +5,6 @@ import com.urban.backend.dto.response.UserInfoResponse;
 import com.urban.backend.model.User;
 import com.urban.backend.model.UserInfo;
 import com.urban.backend.repository.UserInfoRepository;
-import com.urban.backend.repository.UserRepository;
 import com.urban.backend.sercurity.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserInfoService {
-    private final UserRepository userRepository;
     private final JwtService jwtService;
     private final UserInfoRepository userInfoRepository;
     private final UserService userService;
@@ -42,5 +40,19 @@ public class UserInfoService {
     public UserInfo findById(UUID id) {
         return userInfoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User info not found for ID: " + id));
+    }
+
+    public UserInfoResponse getUserInfo(String jwtToken) {
+        String email = jwtService.extractUsername(jwtToken);
+        User user = userService.findByEmail(email);
+
+        UserInfo userInfo = findByUserId(user.getId());
+
+        return UserInfoResponse.fromUserInfo(userInfo);
+    }
+
+    public UserInfo findByUserId(UUID userId) {
+        return userInfoRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User info not found for user ID: " + userId));
     }
 }
