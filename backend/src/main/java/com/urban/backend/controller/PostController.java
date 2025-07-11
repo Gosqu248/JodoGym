@@ -26,7 +26,7 @@ public class PostController {
     public ResponseEntity<PageResponse<PostResponse>> searchPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id") String sortBy) {
+            @RequestParam(defaultValue = "createdDate") String sortBy) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
 
