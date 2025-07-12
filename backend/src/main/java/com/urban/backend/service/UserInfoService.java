@@ -19,6 +19,7 @@ public class UserInfoService {
     private final JwtService jwtService;
     private final UserInfoRepository userInfoRepository;
     private final UserService userService;
+    private final MembershipService membershipService;
 
     @Transactional
     public UserInfoResponse saveUserInfo(String token, UserInfoRequest request) throws IOException {
@@ -48,7 +49,9 @@ public class UserInfoService {
             userService.save(user);
         }
 
+        membershipService.createMembershipForUser(user);
         userInfo = userInfoRepository.save(userInfo);
+
         return UserInfoResponse.fromUserInfo(userInfo);
     }
 

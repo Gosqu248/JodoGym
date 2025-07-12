@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,15 +20,15 @@ public class Membership {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "expiry_date", nullable = false)
+    @Column(name = "expiry_date")
     private Instant expiryDate;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    private Boolean isFrozen = false;
+    private Boolean isFrozen;
 
-    private Instant frozenStart = null;
+    private Instant frozenStart;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -41,6 +40,5 @@ public class Membership {
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();
-        this.expiryDate = Instant.now().plus(1, ChronoUnit.MONTHS);
     }
 }

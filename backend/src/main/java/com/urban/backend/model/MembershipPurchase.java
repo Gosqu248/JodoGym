@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Entity
@@ -21,34 +20,24 @@ public class MembershipPurchase {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "membership_id", nullable = false)
-    private Membership membership;
-
     @Column(name = "purchase_date", nullable = false)
     private Instant purchaseDate;
-
-    @Column(name = "duration_months", nullable = false)
-    private int durationMonths;
-
-    @Column(name = "start_date", nullable = false)
-    private Instant startDate;
-
-    @Column(name = "end_date", nullable = false)
-    private Instant endDate;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
+    @Column(name = "duration_months", nullable = false)
+    private int durationMonths;
+
+    @Column(name = "duration_weeks", nullable = false)
+    private int durationWeeks;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "membership_id", nullable = false)
+    private Membership membership;
 
     @PrePersist
     public void prePersist() {
-        Instant now = Instant.now();
-        this.createdAt = now;
-        this.purchaseDate = now;
-        this.startDate = now;
-        this.endDate = now.plus(durationMonths, ChronoUnit.MONTHS);
+        this.purchaseDate = Instant.now();
     }
 }
