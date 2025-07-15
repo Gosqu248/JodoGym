@@ -18,9 +18,9 @@ public class ActivityController {
     private final ActivityService activityService;
 
     @PostMapping("/start/{userId}")
-    public ResponseEntity<Void> startActivity(@PathVariable UUID userId) {
-        activityService.createActivity(userId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ActivityResponse> startActivity(@PathVariable UUID userId) {
+        ActivityResponse response = activityService.createActivity(userId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/end/{activityId}")
@@ -51,5 +51,11 @@ public class ActivityController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate) {
         ActivityStatus stats = activityService.getMonthlyStatus(userId, startDate);
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<Integer> getAllUsersActivity() {
+        Integer count = activityService.countUsersOnGym();
+        return ResponseEntity.ok(count);
     }
 }
