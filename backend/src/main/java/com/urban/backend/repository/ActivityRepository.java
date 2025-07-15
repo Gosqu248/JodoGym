@@ -25,4 +25,7 @@ public interface ActivityRepository extends JpaRepository<Activity, UUID> {
                                   @Param("start") Instant start,
                                   @Param("end") Instant end);
 
+    @Query("SELECT COUNT(DISTINCT a.user.id) FROM Activity a WHERE a.endTime IS NULL AND a.durationMinutes IS NULL")
+    Integer countUsersOnGym();
+
 }

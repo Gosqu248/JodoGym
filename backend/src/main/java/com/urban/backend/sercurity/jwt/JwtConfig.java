@@ -16,8 +16,8 @@ import java.util.Base64;
 
 @Configuration
 public class JwtConfig {
-    private static final long ACCESS_TOKEN_TTL = 12 * 3600 * 1000;
-    private static final  long REFRESH_TOKEN_TTL = 24 * 3600 * 1000;
+    private static final long ACCESS_TOKEN_TTL = 48 * 3600 * 1000;
+    private static final  long REFRESH_TOKEN_TTL = 96 * 3600 * 1000;
     private static final long RESET_TOKEN_TTL = 5 * 3600 * 1000;
 
 

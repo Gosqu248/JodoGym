@@ -21,14 +21,14 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final UserService userService;
 
-    public void createActivity(UUID userId)  {
+    public ActivityResponse createActivity(UUID userId)  {
         User user = userService.findById(userId);
 
         Activity activity = Activity.builder()
                 .user(user)
                 .build();
 
-        activityRepository.save(activity);
+        return ActivityResponse.fromActivity(activityRepository.save(activity));
     }
 
     public ActivityResponse endActivity(UUID activityId) {
@@ -87,5 +87,9 @@ public class ActivityService {
                         .map(ActivityResponse::fromActivity)
                         .toList()
         );
+    }
+
+    public Integer countUsersOnGym() {
+        return activityRepository.countUsersOnGym();
     }
 }
