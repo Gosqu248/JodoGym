@@ -2,12 +2,16 @@ package com.urban.backend.service;
 
 import com.urban.backend.dto.request.LoginRequest;
 import com.urban.backend.dto.request.RegisterRequest;
+import com.urban.backend.dto.request.ResetCodeRequest;
+import com.urban.backend.dto.request.ResetPasswordRequest;
 import com.urban.backend.dto.response.AuthResponse;
+import com.urban.backend.dto.response.ResultResponse;
 import com.urban.backend.dto.response.RefreshResponse;
 import com.urban.backend.dto.response.UserResponse;
 import com.urban.backend.enums.Role;
 import com.urban.backend.model.User;
 import com.urban.backend.sercurity.jwt.JwtService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +27,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final ResetCodeService resetCodeService;
 
     public UserResponse register(RegisterRequest request) {
         if (userService.existsByEmail(request.email())) {
@@ -93,6 +98,46 @@ public class AuthService {
             }
         }
         throw new RuntimeException("Invalid refresh token");
+    }
+
+    public ResultResponse sendResetPasswordEmail(String email)  {
+        if (!userService.existsByEmail(email)) {
+            throw new IllegalArgumentException("User with this email does not exist");
+        }
+
+        try {
+            User user = userService.findByEmail(email);
+            resetCodeService.generateAndSendResetCode(user);
+            return new ResultResponse(true, "Email sent successfully");
+        } catch (MessagingException e) {
+            return new ResultResponse(false, "Failed to send email: " + e.getMessage());
+        }
+    }
+
+    public ResultResponse verifyResetCode(ResetCodeRequest request) {
+        User user = userService.findByEmail(request.email());
+        boolean result = resetCodeService.verifyResetCode(user, request.code());
+        if (result) {
+            return new ResultResponse(true, "Reset code verified successfully");
+        } else {
+            return new ResultResponse(false, "Invalid or expired reset code");
+        }
+    }
+
+    public ResultResponse resetPassword(ResetPasswordRequest request) {
+        if (!request.newPassword().equals(request.confirmNewPassword())) {
+            throw new IllegalArgumentException("New password and confirmation do not match");
+        }
+
+        try {
+            User user = userService.findByEmail(request.email());
+            user.setPassword(passwordEncoder.encode(request.newPassword()));
+            userService.save(user);
+
+            return new ResultResponse(true, "Password reset successfully");
+        } catch (Exception e) {
+            return new ResultResponse(false, "Failed to reset password: " + e.getMessage());
+        }
     }
 
     public boolean validateToken(String token) {

@@ -40,6 +40,9 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Membership membership;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private ResetCode resetCode;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Activity> activity;
 
