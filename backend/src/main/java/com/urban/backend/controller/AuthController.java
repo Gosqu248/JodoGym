@@ -34,9 +34,10 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<RefreshResponse> refreshToken(
-            @Valid @RequestBody RefreshTokenRequest request
+            @RequestHeader("Authorization") String token
     ) {
-        return ResponseEntity.ok(authService.refreshToken(request.refreshToken()));
+        String refreshToken = token.substring(7);
+        return ResponseEntity.ok(authService.refreshToken(refreshToken));
     }
 
     @PostMapping("/send-reset-mail/{email}")
