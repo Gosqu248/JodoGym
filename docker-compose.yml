@@ -29,5 +29,12 @@ services:
       - db_data:/var/lib/postgresql/data
       - ./pg-healthcheck.sh:/healthcheck/pg-healthcheck.sh:ro
 
+  mail-dev:
+    image: maildev/maildev
+    container_name: jodo-mail
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
 volumes:
   db_data:
