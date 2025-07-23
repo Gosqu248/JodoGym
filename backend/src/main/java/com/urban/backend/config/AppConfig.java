@@ -1,6 +1,6 @@
 package com.urban.backend.config;
 
-import com.urban.backend.repository.UserRepository;
+import com.urban.backend.features.user.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
