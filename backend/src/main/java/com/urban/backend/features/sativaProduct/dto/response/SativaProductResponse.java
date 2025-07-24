@@ -1,5 +1,6 @@
 package com.urban.backend.features.sativaProduct.dto.response;
 
+import com.urban.backend.features.sativaCategory.SativaCategory;
 import com.urban.backend.features.sativaProduct.SativaProduct;
 
 import java.util.List;
@@ -19,7 +20,9 @@ public record SativaProductResponse(
                 sativaProduct.getPrice(),
                 sativaProduct.getImage(),
                 sativaProduct.getProductUrl(),
-                sativaProduct.getCategories()
+                sativaProduct.getCategories().stream()
+                        .map(SativaCategory::getName)
+                        .toList()
         );
     }
 }
