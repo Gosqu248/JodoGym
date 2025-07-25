@@ -27,13 +27,13 @@ public class SativaProductService {
     private final SativaCategoryService sativaCategoryService;
 
 
-    public PageResponse<SativaProductResponse> searchProducts(String query, Pageable pageable) {
+    public PageResponse<SativaProductResponse> searchProducts(Long categoryId, Pageable pageable) {
         Page<SativaProduct> productsPage;
 
-        if (query.trim().isEmpty()) {
+        if (categoryId == null) {
             productsPage = repository.findAll(pageable);
         } else {
-            productsPage = repository.findBySearchQuery(query, pageable);
+            productsPage = repository.findBySearchQuery(categoryId, pageable);
         }
 
         Page<SativaProductResponse> mappedPage = productsPage.map(SativaProductResponse::fromSativaProduct);
