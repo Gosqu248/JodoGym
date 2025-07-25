@@ -1,8 +1,8 @@
 package com.urban.backend.features.sativaProduct;
 
-import com.urban.backend.features.sativaProduct.dto.response.ProductListResponse;
-import com.urban.backend.features.sativaProduct.dto.response.ProductResponse;
-import com.urban.backend.features.sativaProduct.dto.response.SativaProductResponse;
+import com.urban.backend.features.sativaCategory.SativaCategory;
+import com.urban.backend.features.sativaCategory.SativaCategoryService;
+import com.urban.backend.features.sativaProduct.dto.response.*;
 import com.urban.backend.shared.dto.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,21 +24,23 @@ import java.util.Optional;
 public class SativaProductService {
     private final RestTemplate restTemplate;
     private final SativaProductRepository repository;
+    private final SativaCategoryService sativaCategoryService;
 
-    public PageResponse<SativaProductResponse> searchProducts(String query, Pageable pageable) {
+
+    public PageResponse<SativaProductResponse> searchProducts(Long categoryId, Pageable pageable) {
         Page<SativaProduct> productsPage;
 
-        if (query.trim().isEmpty()) {
+        if (categoryId == null) {
             productsPage = repository.findAll(pageable);
         } else {
-            productsPage = repository.findBySearchQuery(query, pageable);
+            productsPage = repository.findBySearchQuery(categoryId, pageable);
         }
 
         Page<SativaProductResponse> mappedPage = productsPage.map(SativaProductResponse::fromSativaProduct);
         return PageResponse.from(mappedPage);
     }
 
-    public void updateProducts() {
+    public void fetchProducts() {
         String url = "https://www.sativalife.eu/api/new/products";
         ResponseEntity<ProductListResponse> response = restTemplate.getForEntity(url, ProductListResponse.class);
         List<ProductResponse> products = Optional.ofNullable(response.getBody())
@@ -60,13 +64,18 @@ public class SativaProductService {
             }
 
             if (shouldSave) {
+                Set<SativaCategory> categories = dto.categories().stream()
+                        .map(category -> sativaCategoryService.findById(category.id()))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+
                 SativaProduct sativaProduct = SativaProduct.builder()
                         .id(dto.id())
                         .title(dto.title())
                         .price(dto.price())
                         .image(dto.image())
                         .productUrl("https://www.sativalife.eu/app/product/" + dto.id())
-                        .categories(dto.categories().stream().map(ProductResponse.Category::name).toList())
+                        .categories(categories)
                         .build();
 
                 repository.save(sativaProduct);

@@ -1,10 +1,11 @@
 package com.urban.backend.features.sativaProduct;
 
+import com.urban.backend.features.sativaCategory.SativaCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -22,8 +23,12 @@ public class SativaProduct {
     private String image;
     private String productUrl;
 
-    @ElementCollection
-    @CollectionTable(name = "sativa_product_category", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "category_name")
-    private List<String> categories = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "sativa_product_categories",
+            schema = "jodo",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<SativaCategory> categories = new HashSet<>();
 }

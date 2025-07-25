@@ -12,7 +12,7 @@ public interface SativaProductRepository extends JpaRepository<SativaProduct, Lo
     @Query("""
         SELECT p FROM SativaProduct p
         JOIN p.categories c
-        WHERE LOWER(c) LIKE LOWER(CONCAT('%', :query, '%'))
+        WHERE c.id = :categoryId
     """)
-    Page<SativaProduct> findBySearchQuery(@Param("query") String query, Pageable pageable);
+    Page<SativaProduct> findBySearchQuery(@Param("categoryId") Long categoryId, Pageable pageable);
 }

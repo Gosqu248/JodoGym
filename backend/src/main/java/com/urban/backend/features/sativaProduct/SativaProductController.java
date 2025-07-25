@@ -20,13 +20,13 @@ public class SativaProductController {
 
     @GetMapping
     public ResponseEntity<PageResponse<SativaProductResponse>> getAllProducts(
-            @RequestParam(defaultValue = "") String query,
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdDate") String sortBy) {
+            @RequestParam(defaultValue = "id") String sortBy) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy));
 
-        return ResponseEntity.ok(service.searchProducts(query, pageable));
+        return ResponseEntity.ok(service.searchProducts(categoryId, pageable));
     }
 }

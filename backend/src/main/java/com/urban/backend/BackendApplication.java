@@ -19,6 +19,8 @@ public class BackendApplication {
         System.setProperty("AUTH_PUBLIC_KEY",  dotenv.get("AUTH_PUBLIC_KEY"));
         System.setProperty("MAIL_USERNAME", dotenv.get("MAIL_USERNAME"));
         System.setProperty("MAIL_PASSWORD", dotenv.get("MAIL_PASSWORD"));
+        System.setProperty("FB_TOKEN", dotenv.get("FB_TOKEN"));
+        System.setProperty("FB_PAGE", dotenv.get("FB_PAGE"));
 
         SpringApplication.run(BackendApplication.class, args);
     }
